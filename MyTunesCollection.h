@@ -13,15 +13,11 @@
 /*  their course assignments without seeking consent */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef _RECORDINGS_H
-#define _RECORDINGS_H
-
 #include <ostream>
 #include <vector>
 #include <string>
-
 #include "UI.h"
-#include "recording.h"
+
 using namespace std;
 template <typename T>
 class MyTunesCollection {
@@ -29,36 +25,54 @@ class MyTunesCollection {
     MyTunesCollection();
 	~MyTunesCollection(void);
     T* findByID(int anID);
+    T* findByID(const string & aUserID);
 	vector<T*> getCollection();
 	void add(T & aElement);
 	void remove(T & aElement);
-	void showOn(UI & aView);
-	void showOn(UI & aView, int memberID);
+	void showOn(UI& aView);
+	void showOn(UI& aView, int memberID);
+    void showOn(UI & view, const string & memberID);
 	private:
-	vector<T*> collection;
-	vector<T*>::iterator findPosition(T& aElement);
+    vector<T*> collection;
+    typename vector<T*>::iterator findPosition(T& aElement);
 };
-MyTunesCollection::MyTunesCollection(){}
-MyTunesCollection::~MyTunesCollection(void){
+
+template <typename T>
+MyTunesCollection<T>::MyTunesCollection(){}
+template <typename T>
+MyTunesCollection<T>::~MyTunesCollection(void){
 	for(int i=0; i<collection.size(); i++)
 		delete collection[i]; //delete Recordings in this container
 }
-template <typename T> vector<T*> MyTunesCollection::getCollection(){return collection;}
+template <typename T>
+vector<T*> MyTunesCollection<T>::getCollection(){return collection;}
 
-template <typename T> T* findByID(int anID){
-    for (vector<T*>::iterator it = collection.begin() ; it != collection.end(); ++it)
+template <typename T>
+T* MyTunesCollection<T>::findByID(int anID){
+    for (typename vector<T*>::iterator it = collection.begin() ; it != collection.end(); ++it)
         if((*it)->getID() == anID) return *it;
     return NULL;
 }
-template <typename T> vector<T*>::iterator MyTunesCollection::findPosition(T & aElement){
-	for (vector<T*>::iterator it = collection.begin() ; it != collection.end(); ++it)
+
+template <typename T>
+T* MyTunesCollection<T>::findByID(const string & aUserID) {
+    for (vector<User*>::iterator itr = collection.begin() ; itr != collection.end(); ++itr)
+        if(((*itr)->getUserID()).compare(aUserID) == 0) return *itr;
+    return NULL;
+}
+
+template <typename T>
+typename vector<T*>::iterator MyTunesCollection<T>::findPosition(T & aElement){
+	for (typename vector<T*>::iterator it = collection.begin() ; it != collection.end(); ++it)
 		if(*it == &aElement) return it;
 	return collection.end();
 }
-template <typename T> void MyTunesCollection::add(T & aElement){
-	collection.push_back(&aRecording);
+template <typename T>
+void MyTunesCollection<T>::add(T & aElement){
+	collection.push_back(&aElement);
 }
-template <typename T> void MyTunesCollection::remove(T & aElement){
+template <typename T>
+void MyTunesCollection<T>::remove(T & aElement){
 	typename vector<T*>::iterator index = findPosition(aElement);
 	if(index != collection.end()) {
 		T * theT = *index;
@@ -66,16 +80,23 @@ template <typename T> void MyTunesCollection::remove(T & aElement){
 		delete theT; //free the memory of theRecording
 	}
 }
-template <typename T> void MyTunesCollection::showOn(UI & view)  {
+template <typename T>
+void MyTunesCollection<T>::showOn(UI& view){
 	view.printOutput("Collection:");
 	for(int i=0; i<collection.size(); i++){
 		view.printOutput((*collection[i]).toString());
 	}
 }
-template <typename T> void MyTunesCollection::showOn(UI & view, int memberID)  {
+template <typename T>
+void MyTunesCollection<T>::showOn(UI& view, int memberID)  {
 	T * type = findByID(memberID);
 	if( type != NULL)
 		view.printOutput(type->toString());
 }
-
-#endif
+template <typename T>
+void MyTunesCollection<T>::showOn(UI & view, const string & memberID) {
+    view.printOutput("User:");
+    User * user = findByID(memberID);
+    if( user != NULL)
+        view.printOutput(user->toString());
+}
