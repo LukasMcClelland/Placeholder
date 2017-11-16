@@ -1,0 +1,49 @@
+//this test shows that all deletes and show functions are still working properly after we implemented our refactor
+//show testing
+show songs
+show songs -s 1151
+show tracks
+show tracks -t 152
+show users
+show users -u cindy
+show recordings
+show recordings -r 111
+
+//delete testing
+delete -u cindy -p songs -t 71
+show users -u cindy
+//track 71 is now gone from cindy's "songs" playlist
+
+delete -u cindy -p songs
+show users -u cindy
+//cindy's playlist "songs" is now gone
+
+delete -u cindy
+show users
+show users -u cindy
+//user cindy is now gone
+
+show recordings -r 111
+delete -r 111
+//recording 111 deleted
+show recordings
+//recording 111 is now gone
+
+//deleting song with ID 1000
+delete -s 1000
+// this song is on recording 100 and playlist "mysongs" of user "gjones". evidence of deletion can be found there
+show recordings -r 100
+show users -u gjones
+
+//deleting track with ID 11
+delete -t 11
+//this track is on recording 100 and playlists "driving" and "favorites" of user "ajones"
+show recordings -r 100
+show users -u ajones
+
+delete -u gjones -p mysongs -t 81 -GLOBAL
+//this deletes a track that's in a playlist from everywhere.
+show users -u gjones
+show tracks
+show recordings -r 105
+//now track 81 has been globally removed
